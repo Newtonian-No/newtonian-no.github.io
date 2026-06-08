@@ -33,14 +33,17 @@ function HeroSection() {
 
     const tl = gsap.timeline({ delay: 0.3 });
 
-    // 动画A：纵向弹性拉伸 → 回弹
-    tl.to(slogan, {
-      scaleY: 1,
-      duration: 1.4,
-      ease: "back.out(3)",
-    }, 0);
+    // F1 风格：文字从下方弹性弹跳上升（y 位移）
+    tl.fromTo(slogan,
+      { y: 120, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.4,
+        ease: "back.out(3)",
+      }, 0);
 
-    // 动画B：垂直方向模糊（SVG滤镜）
+    // 垂直方向动态模糊（跟位移同步，模拟运动模糊）
     tl.to(blurEl, {
       attr: { stdDeviation: "0,20" },
       duration: 0.3,
@@ -52,7 +55,7 @@ function HeroSection() {
       ease: "power2.inOut",
     }, 0.3);
 
-    // 动画C：字符乱码收敛
+    // 字符乱码收敛（跟弹跳上升同步）
     tl.to({ progress: 0 }, {
       progress: 1,
       duration: 1.0,
@@ -99,8 +102,6 @@ function HeroSection() {
           className="text-7xl md:text-[8vw] font-black text-white uppercase tracking-wide leading-none"
           style={{
             fontFamily: "'Oswald', 'Impact', 'Arial Black', sans-serif",
-            transform: "scaleY(0)",
-            transformOrigin: "center center",
             filter: "url(#vertical-blur)",
           }}
         >
