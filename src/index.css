@@ -1,13 +1,28 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "pricedown";
-  src: url("./pricedown.otf");
+/* 自定义字体（可选：引入 Druk-like 的替代字体） */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #02020e;
+  color: #fff;
+  overflow-x: hidden;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  font-family: "pricedown";
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
 }

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "gfr",
+    "title": "GFR 肾小球滤过率自动计算系统",
+    "tag": "医学AI",
+    "description": "UNet3+ Mamba Deform 架构，Dice 0.860，479例多中心数据，投稿EJR",
+    "tech": ["PyTorch", "Mamba", "YOLOv11", "Flask", "Vue"],
+    "links": { "github": "https://github.com/Newtonian-No/GFR" }
+  },
+  {
+    "id": "unity-vr",
+    "title": "核医学部数字孪生虚拟医院",
+    "tag": "VR/Unity",
+    "description": "Unity引擎 + VR，上海市第六人民医院部署，校级挑战杯一等奖，软著已授权",
+    "tech": ["Unity", "C#", "VR", "3D建模"],
+    "links": {}
+  },
+  {
+    "id": "rag-system",
+    "title": "医学知识库 RAG 系统",
+    "tag": "RAG",
+    "description": "Streamlit + Milvus + BGE-m3 + Qwen，OCR+版面分析+向量检索全链路",
+    "tech": ["Python", "Milvus", "BGE-m3", "Streamlit", "OCR"],
+    "links": {}
+  },
+  {
+    "id": "astrbot",
+    "title": "AstrBot + Hermes Agent 智能助手",
+    "tag": "LLM Agent",
+    "description": "多平台智能助手，多Agent协作调度，RAG知识库，自建全链路",
+    "tech": ["Python", "LLM", "RAG", "多Agent", "QQ/微信"],
+    "links": { "github": "https://github.com/Newtonian-No" }
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "date": "2026-06",
+    "title": "Hermes Agent 多模态调度系统上线",
+    "tag": "Agent",
+    "description": "搜索/代码/知识库/架构师四子节点并行调度，支持微信、QQ双平台"
+  },
+  {
+    "date": "2026-05",
+    "title": "Obsidian 知识库深度整合",
+    "tag": "RAG",
+    "description": "接入本地 Obsidian Vault，实现笔记语义检索与上下文增强"
+  },
+  {
+    "date": "2026-04",
+    "title": "NapCat QQ Bot 接入",
+    "tag": "Platform",
+    "description": "基于 Docker 部署 QQ Bot，WebSocket 通信，支持群聊与私聊"
+  },
+  {
+    "date": "2026-03",
+    "title": "微信 iLink 平台接入",
+    "tag": "Platform",
+    "description": "接入微信 iLink 消息通道，支持 Markdown 富文本与媒体文件投递"
+  },
+  {
+    "date": "2026-02",
+    "title": "Hermes Agent 框架搭建",
+    "tag": "Core",
+    "description": "基于 Hermes Agent 构建多Agent调度框架，Skill 系统与 Cron 定时任务"
+  },
+  {
+    "date": "2025-12",
+    "title": "AstrBot 基础对话系统上线",
+    "tag": "Core",
+    "description": "基于 LLM 的多轮对话系统，支持上下文记忆与基础工具调用"
+  }
+]
