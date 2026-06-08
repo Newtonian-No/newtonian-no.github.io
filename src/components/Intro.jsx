@@ -1,5 +1,8 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 const COLS = 10;
 const ROWS = 8;
@@ -7,52 +10,65 @@ const TOTAL = COLS * ROWS;
 
 function Intro({ onComplete }) {
   const containerRef = useRef(null);
-  const gridRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        onComplete: () => {
+          if (containerRef.current) {
+            containerRef.current.style.display = "none";
+          }
+          onComplete();
+        },
+      });
 
-    const blocks = Array.from(grid.children);
-    if (blocks.length === 0) return;
-
-    // 显式设置初始状态（opacity=1, scale=1）确保 GSAP 从正确起点开始
-    gsap.set(blocks, { opacity: 1, scale: 1 });
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        if (containerRef.current) {
-          containerRef.current.style.display = "none";
-        }
-        onComplete();
-      },
-    });
-
-    // 阶段一：icon 旋转
-    tl.to(".intro-icon-group", {
-      rotation: 360,
-      duration: 0.9,
-      ease: "power2.inOut",
-    })
-    // 阶段二：icon 分裂消散
-    .to(".intro-icon-left", {
-      x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
-    }, "-=0.15")
-    .to(".intro-icon-right", {
-      x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
-    }, "<")
-    // 阶段三：网格方块随机缩小消失
-    .to(blocks, {
-      scale: 0,
-      opacity: 0,
-      duration: 1.2,
-      ease: "power2.inOut",
-      stagger: {
-        amount: 0.7,
-        from: "random",
-      },
-    }, "-=0.15");
-  }, []);
+      // 阶段一：icon 旋转
+      tl.to(".intro-icon-group", {
+        rotation: 360,
+        duration: 0.9,
+        ease: "power2.inOut",
+      })
+        // 阶段二：icon 分裂消散（用 autoAlpha 替代 opacity）
+        .to(
+          ".intro-icon-left",
+          {
+            x: -90,
+            y: -40,
+            autoAlpha: 0,
+            scale: 0.2,
+            duration: 0.4,
+          },
+          "-=0.15"
+        )
+        .to(
+          ".intro-icon-right",
+          {
+            x: 90,
+            y: 40,
+            autoAlpha: 0,
+            scale: 0.2,
+            duration: 0.4,
+          },
+          "<"
+        )
+        // 阶段三：网格方块随机缩小消失
+        .to(
+          ".mask-block",
+          {
+            scale: 0,
+            autoAlpha: 0,
+            duration: 1.2,
+            ease: "power2.inOut",
+            stagger: {
+              amount: 0.7,
+              from: "random",
+            },
+          },
+          "-=0.15"
+        );
+    },
+    { scope: containerRef }
+  );
 
   return (
     <div
@@ -69,7 +85,7 @@ function Intro({ onComplete }) {
 
       {/* 斜切网格遮罩 */}
       <div
-        ref={gridRef}
+        className="skew-grid-mask"
         style={{
           position: "absolute",
           top: "-10vh",
@@ -87,6 +103,7 @@ function Intro({ onComplete }) {
         {Array.from({ length: TOTAL }).map((_, i) => (
           <div
             key={i}
+            className="mask-block"
             style={{
               backgroundColor: "#0a0a1e",
               border: "0.5px solid rgba(255,255,255,0.06)",

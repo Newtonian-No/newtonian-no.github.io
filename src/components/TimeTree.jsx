@@ -1,32 +1,35 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import milestones from "../data/ai-milestones.json";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 function TimeTree() {
   const sectionRef = useRef(null);
 
-  useEffect(() => {
-    const cards = sectionRef.current.querySelectorAll(".timeline-card");
-    gsap.fromTo(
-      cards,
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1, y: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
-        },
-        ease: "power3.out",
-      }
-    );
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
+  useGSAP(
+    () => {
+      gsap.fromTo(
+        ".timeline-card",
+        { autoAlpha: 0, y: 40 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+          ease: "power3.out",
+        }
+      );
+    },
+    { scope: sectionRef }
+  );
 
   return (
     <div ref={sectionRef} className="relative max-w-3xl mx-auto py-8 pl-12 md:pl-0">
