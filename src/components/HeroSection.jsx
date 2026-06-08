@@ -31,7 +31,7 @@ function HeroSection() {
       slogan.textContent = result;
     };
 
-    const tl = gsap.timeline({ delay: 0.3 });
+    const tl = gsap.timeline();
 
     // F1 风格：文字从下方弹性弹跳上升（y 位移）
     tl.fromTo(slogan,
