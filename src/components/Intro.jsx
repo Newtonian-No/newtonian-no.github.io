@@ -10,12 +10,14 @@ function Intro({ onComplete }) {
   const gridRef = useRef(null);
 
   useLayoutEffect(() => {
-    // 通过 ref 直接拿 children，不依赖 className 选择器
     const grid = gridRef.current;
     if (!grid) return;
 
     const blocks = Array.from(grid.children);
     if (blocks.length === 0) return;
+
+    // 显式设置初始状态（opacity=1, scale=1）确保 GSAP 从正确起点开始
+    gsap.set(blocks, { opacity: 1, scale: 1 });
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -39,19 +41,17 @@ function Intro({ onComplete }) {
     .to(".intro-icon-right", {
       x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
     }, "<")
-    // 阶段三：网格闪白冲击波 → 方块随机缩小消失
-    .fromTo(blocks,
-      { opacity: 1, scale: 1 },
-      {
-        opacity: [1, 1, 1, 0],
-        scale: [1, 1.3, 1.0, 0],
-        duration: 1.3,
-        ease: "power2.inOut",
-        stagger: {
-          amount: 0.7,
-          from: "random",
-        },
-      }, "-=0.15");
+    // 阶段三：网格方块随机缩小消失
+    .to(blocks, {
+      scale: 0,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.7,
+        from: "random",
+      },
+    }, "-=0.15");
   }, []);
 
   return (
@@ -67,7 +67,7 @@ function Intro({ onComplete }) {
         </svg>
       </div>
 
-      {/* 斜切网格遮罩 — 平行四边形方块 */}
+      {/* 斜切网格遮罩 */}
       <div
         ref={gridRef}
         style={{

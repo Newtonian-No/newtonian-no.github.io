@@ -6,4 +6,14 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/portfolio-preview/',
+  build: {
+    rollupOptions: {
+      treeshake: {
+        moduleSideEffects: (id) => {
+          // GSAP 内部依赖副作用（如注册插件到全局），tree-shaking 会破坏其功能
+          if (id.includes('gsap')) return 'no-treeshake';
+        },
+      },
+    },
+  },
 })
