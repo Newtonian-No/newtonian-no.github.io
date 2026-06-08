@@ -1,74 +1,120 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
+const TARGET = "BEYOND LIMITS";
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!@#$%&";
+
 function HeroSection() {
-  const containerRef = useRef(null);
+  const sloganRef = useRef(null);
+  const blurRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline();
+    const slogan = sloganRef.current;
+    const blurEl = blurRef.current;
+    if (!slogan || !blurEl) return;
 
-    // 标题从下浮上
-    tl.fromTo(
-      ".hero-title",
-      { y: 60, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
-    )
-    // 副标题延迟浮现
-    .fromTo(
-      ".hero-sub",
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-      "-=0.6"
-    )
+    // 字符乱码函数：按进度从左到右逐步锁定真实字符
+    const scrambleText = (progress) => {
+      let result = "";
+      for (let i = 0; i < TARGET.length; i++) {
+        if (TARGET[i] === " ") {
+          result += " ";
+          continue;
+        }
+        const lockThreshold = i / TARGET.length;
+        if (progress > lockThreshold) {
+          result += TARGET[i];
+        } else {
+          result += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+      }
+      slogan.textContent = result;
+    };
+
+    const tl = gsap.timeline({ delay: 0.3 });
+
+    // 动画A：纵向弹性拉伸 → 回弹
+    tl.to(slogan, {
+      scaleY: 1,
+      duration: 1.4,
+      ease: "back.out(3)",
+    }, 0);
+
+    // 动画B：垂直方向模糊（SVG滤镜）
+    tl.to(blurEl, {
+      attr: { stdDeviation: "0,20" },
+      duration: 0.3,
+      ease: "power2.out",
+    }, 0)
+    .to(blurEl, {
+      attr: { stdDeviation: "0,0" },
+      duration: 0.8,
+      ease: "power2.inOut",
+    }, 0.3);
+
+    // 动画C：字符乱码收敛
+    tl.to({ progress: 0 }, {
+      progress: 1,
+      duration: 1.0,
+      ease: "none",
+      onUpdate: function () {
+        scrambleText(this.targets()[0].progress);
+      },
+      onComplete: () => {
+        slogan.textContent = TARGET;
+      },
+    }, 0);
+
+    // 副标题 + 滚动指示器 延迟淡入
+    tl.fromTo(".hero-sub", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, "-=0.2");
+    tl.fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
+
     // 滚动指示器呼吸动画
-    .fromTo(
-      ".hero-scroll",
-      { opacity: 0 },
-      { opacity: 1, duration: 0.8 },
-      "-=0.2"
-    );
-
-    // 持续呼吸
-    gsap.to(".hero-scroll", {
+    tl.to(".hero-scroll", {
       y: 10,
       duration: 1.5,
       repeat: -1,
       yoyo: true,
       ease: "power1.inOut",
-    });
+    }, "-=0.5");
+
+    return () => tl.kill();
   }, []);
 
   return (
-    <section
-      ref={containerRef}
-      className="relative h-screen flex flex-col items-center justify-center bg-[#02020e] overflow-hidden"
-    >
-      {/* 大标题 */}
+    <section className="relative h-screen flex flex-col items-center justify-center bg-[#02020e] overflow-hidden">
+      {/* SVG 垂直模糊滤镜 */}
+      <svg style={{ position: "absolute", width: 0, height: 0 }}>
+        <defs>
+          <filter id="vertical-blur">
+            <feGaussianBlur ref={blurRef} stdDeviation="0,0" />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Slogan 主体 */}
       <div className="text-center z-10 px-6">
-        <h1 className="hero-title text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter text-white leading-none">
-          BEYOND
-          <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-            LIMITS
-          </span>
+        <h1
+          ref={sloganRef}
+          className="text-7xl md:text-[8vw] font-black text-white uppercase tracking-wide leading-none"
+          style={{
+            fontFamily: "'Oswald', 'Impact', 'Arial Black', sans-serif",
+            transform: "scaleY(0)",
+            transformOrigin: "center center",
+            filter: "url(#vertical-blur)",
+          }}
+        >
+          {TARGET}
         </h1>
-        <p className="hero-sub text-lg md:text-xl text-gray-500 font-light mt-8 max-w-md mx-auto">
+        <p className="hero-sub text-lg md:text-xl text-gray-500 font-light mt-8 max-w-md mx-auto opacity-0">
           阮愔哲 · 上海大学 · 人工智能
         </p>
       </div>
 
       {/* 滚动指示器 */}
-      <div className="hero-scroll absolute bottom-10 flex flex-col items-center gap-3 text-gray-600">
+      <div className="hero-scroll absolute bottom-10 flex flex-col items-center gap-3 text-gray-600 opacity-0">
         <span className="text-[11px] tracking-[0.3em] uppercase">Scroll to Explore</span>
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          className="animate-bounce"
-        >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 5v14M5 12l7 7 7-7" />
         </svg>
       </div>
