@@ -1,69 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-const COLS = 14;
-const ROWS = 10;
+const COLS = 10;
+const ROWS = 8;
+const TOTAL = COLS * ROWS;
 
 function Intro({ onComplete }) {
   const containerRef = useRef(null);
-  const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    // 生成棋盘格方块 — F1方格旗
-    const rowData = [];
-    for (let r = 0; r < ROWS; r++) {
-      const cells = [];
-      for (let c = 0; c < COLS; c++) {
-        const isWhite = (r + c) % 2 === 0;
-        cells.push({ r, c, isWhite });
-      }
-      rowData.push(cells);
-    }
-    setRows(rowData);
+    const blocks = document.querySelectorAll(".mask-block");
 
-    // 等 DOM 渲染完再启动动画
-    requestAnimationFrame(() => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          // 动画结束后移除整个容器
-          if (containerRef.current) {
-            containerRef.current.style.display = "none";
-          }
-          onComplete();
-        },
-      });
-
-      // 阶段一：icon 旋转
-      tl.to(".intro-icon-group", {
-        rotation: 360,
-        duration: 0.9,
-        ease: "power2.inOut",
-      })
-      // 阶段二：icon分裂消散
-      .to(".intro-icon-left", {
-        x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
-      }, "-=0.15")
-      .to(".intro-icon-right", {
-        x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
-      }, "<")
-      // 阶段三：方格旗丝绸滑落 — 逐列从上往下滑出屏幕
-      .to(".checker-col", {
-        y: "105vh",
-        duration: 1.0,
-        stagger: {
-          each: 0.06,
-          from: "center",     // 从中间列开始向两侧扩展
-          grid: "auto",
-        },
-        ease: "power3.in",    // 加速滑出，模拟重力+丝绸
-      }, "-=0.1");
+    const tl = gsap.timeline({
+      onComplete: () => {
+        if (containerRef.current) {
+          containerRef.current.style.display = "none";
+        }
+        onComplete();
+      },
     });
+
+    // 阶段一：icon 旋转
+    tl.to(".intro-icon-group", {
+      rotation: 360,
+      duration: 0.9,
+      ease: "power2.inOut",
+    })
+    // 阶段二：icon 分裂消散
+    .to(".intro-icon-left", {
+      x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
+    }, "-=0.15")
+    .to(".intro-icon-right", {
+      x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
+    }, "<")
+    // 阶段三：斜切网格遮罩 — 方块随机缩小消失
+    .to(blocks, {
+      scale: 0,
+      duration: 1.0,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.7,
+        from: "random",
+      },
+    }, "-=0.1");
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] overflow-hidden"
+      className="fixed inset-0 z-[100] overflow-hidden bg-[#02020e]"
     >
       {/* Icon: 两根竖线（占位符） */}
       <div className="intro-icon-group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
@@ -73,28 +58,33 @@ function Intro({ onComplete }) {
         </svg>
       </div>
 
-      {/* 方格旗网格 — 逐列滑落 */}
-      <div className="absolute inset-0 z-10 flex">
-        {rows.length > 0 &&
-          Array.from({ length: COLS }).map((_, c) => (
-            <div
-              key={c}
-              className="checker-col flex-1 flex flex-col"
-            >
-              {Array.from({ length: ROWS }).map((_, r) => {
-                const isWhite = (r + c) % 2 === 0;
-                return (
-                  <div
-                    key={r}
-                    className="flex-1"
-                    style={{
-                      backgroundColor: isWhite ? "#f0f0f0" : "#0a0a0a",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          ))}
+      {/* 斜切网格遮罩 — 平行四边形方块 */}
+      <div
+        className="skew-grid-mask"
+        style={{
+          position: "absolute",
+          top: "-10vh",
+          left: "-10vw",
+          width: "120vw",
+          height: "120vh",
+          zIndex: 10,
+          display: "grid",
+          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+          gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+          gap: "2px",
+          transform: "skewX(-15deg)",
+        }}
+      >
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <div
+            key={i}
+            className="mask-block"
+            style={{
+              backgroundColor: "#02020e",
+              transformOrigin: "center center",
+            }}
+          />
+        ))}
       </div>
     </div>
   );
