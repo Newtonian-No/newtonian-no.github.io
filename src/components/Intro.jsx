@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
 const COLS = 10;
@@ -7,48 +7,51 @@ const TOTAL = COLS * ROWS;
 
 function Intro({ onComplete }) {
   const containerRef = useRef(null);
+  const gridRef = useRef(null);
 
-  useEffect(() => {
-    // 等 React 把 DOM 写入后再抓元素
-    const schedule = requestAnimationFrame(() => {
-      const blocks = containerRef.current.querySelectorAll(".mask-block");
-      if (blocks.length === 0) return;
+  useLayoutEffect(() => {
+    // 通过 ref 直接拿 children，不依赖 className 选择器
+    const grid = gridRef.current;
+    if (!grid) return;
 
-      const tl = gsap.timeline({
-        onComplete: () => {
-          if (containerRef.current) {
-            containerRef.current.style.display = "none";
-          }
-          onComplete();
-        },
-      });
+    const blocks = Array.from(grid.children);
+    if (blocks.length === 0) return;
 
-      // 阶段一：icon 旋转
-      tl.to(".intro-icon-group", {
-        rotation: 360,
-        duration: 0.9,
-        ease: "power2.inOut",
-      })
-      // 阶段二：icon 分裂消散
-      .to(".intro-icon-left", {
-        x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
-      }, "-=0.15")
-      .to(".intro-icon-right", {
-        x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
-      }, "<")
-      // 阶段三：斜切网格遮罩 — 方块随机缩小消失
-      .to(blocks, {
-        scale: 0,
-        duration: 1.0,
+    const tl = gsap.timeline({
+      onComplete: () => {
+        if (containerRef.current) {
+          containerRef.current.style.display = "none";
+        }
+        onComplete();
+      },
+    });
+
+    // 阶段一：icon 旋转
+    tl.to(".intro-icon-group", {
+      rotation: 360,
+      duration: 0.9,
+      ease: "power2.inOut",
+    })
+    // 阶段二：icon 分裂消散
+    .to(".intro-icon-left", {
+      x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
+    }, "-=0.15")
+    .to(".intro-icon-right", {
+      x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
+    }, "<")
+    // 阶段三：网格闪白冲击波 → 方块随机缩小消失
+    .fromTo(blocks,
+      { opacity: 1, scale: 1 },
+      {
+        opacity: [1, 1, 1, 0],
+        scale: [1, 1.3, 1.0, 0],
+        duration: 1.3,
         ease: "power2.inOut",
         stagger: {
           amount: 0.7,
           from: "random",
         },
-      }, "-=0.1");
-    });
-
-    return () => cancelAnimationFrame(schedule);
+      }, "-=0.15");
   }, []);
 
   return (
@@ -66,7 +69,7 @@ function Intro({ onComplete }) {
 
       {/* 斜切网格遮罩 — 平行四边形方块 */}
       <div
-        className="skew-grid-mask"
+        ref={gridRef}
         style={{
           position: "absolute",
           top: "-10vh",
@@ -84,9 +87,9 @@ function Intro({ onComplete }) {
         {Array.from({ length: TOTAL }).map((_, i) => (
           <div
             key={i}
-            className="mask-block"
             style={{
-              backgroundColor: "#02020e",
+              backgroundColor: "#0a0a1e",
+              border: "0.5px solid rgba(255,255,255,0.06)",
               transformOrigin: "center center",
             }}
           />
