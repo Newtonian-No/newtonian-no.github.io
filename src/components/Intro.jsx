@@ -1,106 +1,100 @@
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-const COLS = 12;
-const ROWS = 8;
+const COLS = 14;
+const ROWS = 10;
 
 function Intro({ onComplete }) {
   const containerRef = useRef(null);
-  const iconLeftRef = useRef(null);
-  const iconRightRef = useRef(null);
-  const [blocks, setBlocks] = useState([]);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const items = [];
+    // 生成棋盘格方块 — F1方格旗
+    const rowData = [];
     for (let r = 0; r < ROWS; r++) {
+      const cells = [];
       for (let c = 0; c < COLS; c++) {
-        const distFromCenter = Math.sqrt(
-          Math.pow((c - COLS / 2 + 0.5) / (COLS / 2), 2) +
-          Math.pow((r - ROWS / 2 + 0.5) / (ROWS / 2), 2)
-        );
-        items.push({ r, c, dist: distFromCenter });
+        const isWhite = (r + c) % 2 === 0;
+        cells.push({ r, c, isWhite });
       }
+      rowData.push(cells);
     }
-    items.sort((a, b) => a.dist - b.dist);
-    setBlocks(items);
+    setRows(rowData);
 
-    const tl = gsap.timeline({ onComplete });
-
-    // 阶段一：icon 旋转
-    tl.to(".intro-icon-group", {
-      rotation: 360,
-      duration: 1,
-      ease: "power2.inOut",
-    })
-    // 阶段二：icon 分裂消散
-    .to(iconLeftRef.current, {
-      x: -80, y: -30, opacity: 0, scale: 0.3, duration: 0.5,
-    }, "-=0.2")
-    .to(iconRightRef.current, {
-      x: 80, y: 30, opacity: 0, scale: 0.3, duration: 0.5,
-    }, "<")
-    // 阶段三：方块从中心向外扩散消失（带闪烁）
-    .add(() => {
-      const allBlocks = document.querySelectorAll(".mask-block");
-      // 先集体闪白
-      gsap.to(allBlocks, {
-        backgroundColor: "rgba(255,255,255,0.08)",
-        duration: 0.15,
-        ease: "power1.out",
+    // 等 DOM 渲染完再启动动画
+    requestAnimationFrame(() => {
+      const tl = gsap.timeline({
         onComplete: () => {
-          // 然后从中心向外缩小消失
-          gsap.to(allBlocks, {
-            scale: 0,
-            opacity: 0,
-            duration: 0.5,
-            stagger: {
-              each: 0.006,
-              from: "center",
-              grid: [ROWS, COLS],
-            },
-            ease: "power2.in",
-          });
+          // 动画结束后移除整个容器
+          if (containerRef.current) {
+            containerRef.current.style.display = "none";
+          }
+          onComplete();
         },
       });
-    }, "-=0.2");
 
-    return () => tl.kill();
+      // 阶段一：icon 旋转
+      tl.to(".intro-icon-group", {
+        rotation: 360,
+        duration: 0.9,
+        ease: "power2.inOut",
+      })
+      // 阶段二：icon分裂消散
+      .to(".intro-icon-left", {
+        x: -90, y: -40, opacity: 0, scale: 0.2, duration: 0.4,
+      }, "-=0.15")
+      .to(".intro-icon-right", {
+        x: 90, y: 40, opacity: 0, scale: 0.2, duration: 0.4,
+      }, "<")
+      // 阶段三：方格旗丝绸滑落 — 逐列从上往下滑出屏幕
+      .to(".checker-col", {
+        y: "105vh",
+        duration: 1.0,
+        stagger: {
+          each: 0.06,
+          from: "center",     // 从中间列开始向两侧扩展
+          grid: "auto",
+        },
+        ease: "power3.in",    // 加速滑出，模拟重力+丝绸
+      }, "-=0.1");
+    });
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-[#02020e] flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[100] overflow-hidden"
     >
       {/* Icon: 两根竖线（占位符） */}
-      <div className="intro-icon-group absolute z-20">
+      <div className="intro-icon-group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
         <svg width="80" height="100" viewBox="0 0 80 100">
-          <rect ref={iconLeftRef} x="10" y="10" width="16" height="80" rx="4" fill="white" />
-          <rect ref={iconRightRef} x="54" y="10" width="16" height="80" rx="4" fill="white" />
+          <rect className="intro-icon-left" x="10" y="10" width="16" height="80" rx="4" fill="white" />
+          <rect className="intro-icon-right" x="54" y="10" width="16" height="80" rx="4" fill="white" />
         </svg>
       </div>
 
-      {/* 方块遮罩网格 — 比背景稍亮 + 微弱边框，让消散可见 */}
-      <div
-        className="absolute inset-0 z-10"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-          gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-        }}
-      >
-        {blocks.map((b, i) => (
-          <div
-            key={i}
-            className="mask-block"
-            style={{
-              gridRow: b.r + 1,
-              gridColumn: b.c + 1,
-              backgroundColor: "#0a0a1e",
-              border: "1px solid rgba(255,255,255,0.04)",
-            }}
-          />
-        ))}
+      {/* 方格旗网格 — 逐列滑落 */}
+      <div className="absolute inset-0 z-10 flex">
+        {rows.length > 0 &&
+          Array.from({ length: COLS }).map((_, c) => (
+            <div
+              key={c}
+              className="checker-col flex-1 flex flex-col"
+            >
+              {Array.from({ length: ROWS }).map((_, r) => {
+                const isWhite = (r + c) % 2 === 0;
+                return (
+                  <div
+                    key={r}
+                    className="flex-1"
+                    style={{
+                      backgroundColor: isWhite ? "#f0f0f0" : "#0a0a0a",
+                    }}
+                  />
+                );
+              })}
+            </div>
+          ))}
       </div>
     </div>
   );
