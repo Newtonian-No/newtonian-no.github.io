@@ -4,6 +4,7 @@ import HeroSection from "./components/HeroSection";
 import Header from "./components/Header";
 import TabMe from "./components/TabMe";
 import TabAI from "./components/TabAI";
+import StarRing from "./components/StarRing";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,18 +13,20 @@ function App() {
 
   const handleIntroComplete = () => {
     setIsLoading(false);
-    // 等 Intro 从 DOM 移除后，再挂载 HeroSection，确保 GSAP 动画用户可见
     setTimeout(() => setShowContent(true), 100);
   };
 
   return (
     <div className="bg-[#02020e] text-white overflow-x-hidden">
+      {/* 星环背景：始终渲染，fixed 全屏，在 Intro 和 HeroSection 下方 */}
+      <StarRing />
+
       {isLoading && <Intro onComplete={handleIntroComplete} />}
 
       {showContent && (
         <div className="animate-fadeIn">
           <HeroSection />
-          <section className="min-h-screen">
+          <section className="min-h-screen bg-[#02020e]">
             <Header activeTab={activeTab} setActiveTab={setActiveTab} />
             <main className="pb-20 px-6">
               {activeTab === "me" ? <TabMe /> : <TabAI />}

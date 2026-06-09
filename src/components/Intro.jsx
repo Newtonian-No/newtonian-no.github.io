@@ -4,8 +4,8 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
-const COLS = 10;
-const ROWS = 8;
+const COLS = 5;
+const ROWS = 4;
 const TOTAL = COLS * ROWS;
 
 function Intro({ onComplete }) {
@@ -28,30 +28,18 @@ function Intro({ onComplete }) {
         duration: 0.9,
         ease: "power2.inOut",
       })
-        // 阶段二：icon 分裂消散（用 autoAlpha 替代 opacity）
+        // 阶段二：icon 分裂消散
         .to(
           ".intro-icon-left",
-          {
-            x: -90,
-            y: -40,
-            autoAlpha: 0,
-            scale: 0.2,
-            duration: 0.4,
-          },
+          { x: -90, y: -40, autoAlpha: 0, scale: 0.2, duration: 0.4 },
           "-=0.15"
         )
         .to(
           ".intro-icon-right",
-          {
-            x: 90,
-            y: 40,
-            autoAlpha: 0,
-            scale: 0.2,
-            duration: 0.4,
-          },
+          { x: 90, y: 40, autoAlpha: 0, scale: 0.2, duration: 0.4 },
           "<"
         )
-        // 阶段三：网格方块随机缩小消失
+        // 阶段三：网格方块随机缩小消失 → 露出后面星环
         .to(
           ".mask-block",
           {
@@ -73,9 +61,9 @@ function Intro({ onComplete }) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] overflow-hidden bg-[#02020e]"
+      className="fixed inset-0 z-[100] overflow-hidden"
     >
-      {/* Icon: 两根竖线（占位符） */}
+      {/* Icon */}
       <div className="intro-icon-group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
         <svg width="80" height="100" viewBox="0 0 80 100">
           <rect className="intro-icon-left" x="10" y="10" width="16" height="80" rx="4" fill="white" />
@@ -96,7 +84,7 @@ function Intro({ onComplete }) {
           display: "grid",
           gridTemplateColumns: `repeat(${COLS}, 1fr)`,
           gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-          gap: "2px",
+          gap: "0px",
           transform: "skewX(-15deg)",
         }}
       >
@@ -106,7 +94,6 @@ function Intro({ onComplete }) {
             className="mask-block"
             style={{
               backgroundColor: "#0a0a1e",
-              border: "0.5px solid rgba(255,255,255,0.06)",
               transformOrigin: "center center",
             }}
           />
