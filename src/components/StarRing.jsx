@@ -91,15 +91,16 @@ const STYLES = {
     ],
     diskThicknessInner: 0.02, diskThicknessOuter: 0.20,
     dopplerBoost: true,
-    // 光子环：赤道面扁平环 @ 1.5Rs（光子球半径）
-    totalHalo: 3000,
-    haloRadius: 1.5,     // 光子环半径（Rs 倍数）= 1.5Rs
+    // 光子环：极细 torus @ 1.5Rs（光子球），minorR 小避免甜圈
+    totalHalo: 4000,
+    haloMajor: 1.5,      // torus 主半径 = 光子球 1.5Rs
+    haloMinor: 0.06,     // 管半径极小（0.06Rs），只给一点点 3D 厚度
     haloColors: [
-      { color: "#FFFFFF", weight: 50 },
+      { color: "#FFFFFF", weight: 40 },
       { color: "#D4EBFF", weight: 35 },
-      { color: "#A0C8F0", weight: 15 },
+      { color: "#A0C8F0", weight: 25 },
     ],
-    haloWeights: [50, 35, 15],
+    haloWeights: [40, 35, 25],
   },
 };
 
@@ -113,7 +114,7 @@ const {
   totalDisk: N_DISK, diskZones: DISK_Z,
   diskThicknessInner: TH_IN, diskThicknessOuter: TH_OUT,
   dopplerBoost: DOPPLER,
-  totalHalo: N_HALO, haloRadius: HR,
+  totalHalo: N_HALO, haloMajor: HM, haloMinor: Hm,
   haloColors: HALO_C, haloWeights: HALO_W,
 } = cfg;
 
@@ -121,15 +122,17 @@ const R = 8;               // 事件视界半径（局部空间）
 const TOTAL = N_BODY + N_DISK + N_HALO;
 const MOUSE_Y = 0.4, MOUSE_X = 0.25, LERP = 0.04;
 
-// ─── 辅助：扁平环（赤道面 Y≈0） ───
-function ringPos(radius, ringThickness) {
+// ─── 辅助：torus 粒子（极细管径，避免甜圈） ───
+function torusPos(majorR, minorR) {
   const theta = Math.random() * Math.PI * 2;
-  const r = radius + (Math.random() - 0.5) * ringThickness;
+  const phi = Math.random() * Math.PI * 2;
+  const r = majorR + minorR * Math.cos(phi);
   return {
     x: r * Math.cos(theta),
-    y: (Math.random() - 0.5) * 0.06,  // 极其微小的 Y 偏移（扁平环）
+    y: minorR * Math.sin(phi),
     z: r * Math.sin(theta),
     theta,
+    phi,
   };
 }
 
@@ -226,17 +229,16 @@ function StarRing() {
       spd[i] = 6.0 / Math.sqrt(rr);
     }
 
-    // 3. 光子环：赤道面扁平环 @ 1.5Rs
+    // 3. 光子环：极细 3D torus 包裹事件视界
     const hTw = HALO_W.reduce((s, w) => s + w, 0);
-    const ringR = R * HR;
-    const ringThick = 0.4;  // 环面径向宽度（小 → 细环）
+    const majorR = R * HM, minorR = R * Hm;
 
     for (; i < TOTAL; i++) {
       rid[i] = Math.random();
-      const rp = ringPos(ringR, ringThick);
-      pos[i * 3] = rp.x;
-      pos[i * 3 + 1] = rp.y;
-      pos[i * 3 + 2] = rp.z;
+      const tp = torusPos(majorR, minorR);
+      pos[i * 3] = tp.x;
+      pos[i * 3 + 1] = tp.y;
+      pos[i * 3 + 2] = tp.z;
 
       let pick = Math.random() * hTw, acc = 0, ci = 0;
       for (let k = 0; k < HALO_W.length; k++) {
@@ -244,9 +246,9 @@ function StarRing() {
       }
       const hc = new THREE.Color(HALO_C[ci].color);
       col[i * 3] = hc.r; col[i * 3 + 1] = hc.g; col[i * 3 + 2] = hc.b;
-      siz[i] = 1.0 + Math.random() * 0.8;  // 大粒子，确保可见
+      siz[i] = 1.0 + Math.random() * 0.8;
       opa[i] = 0.95;
-      spd[i] = 0;  // 光子环不旋转（这是弯曲光的投影，不是轨道物质）
+      spd[i] = 0;  // 光子环不旋转
     }
 
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
