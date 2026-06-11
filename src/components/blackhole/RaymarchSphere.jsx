@@ -114,7 +114,7 @@ export default function RaymarchSphere() {
             colorT.add(noiseVal.sub(0.5).mul(0.3))
           );
 
-          const alpha = float(1.0); // DEBUG: 暴力 alpha 测试
+          const alpha = clamp(density.mul(20.0).mul(sf), 0.0, 1.0);
           const oneMinusA = oneMinus(alphaAcc);
           colorAcc.assign(mix(colorAcc, rampCol, oneMinusA.mul(alpha)));
           alphaAcc.assign(mix(alphaAcc, float(1), alpha));
