@@ -3,8 +3,8 @@ import * as THREE from "three";
 
 // ═══════════════════════════════════════════
 // 样式选择：'saturn' → 土星 | 'gargantua' → 卡冈图亚黑洞
+// 可通过 props.style 覆盖
 // ═══════════════════════════════════════════
-const STYLE = "gargantua";
 
 const VERTEX_SHADER = `
 attribute float size;
@@ -104,39 +104,34 @@ const STYLES = {
   },
 };
 
-const cfg = STYLES[STYLE];
-const FRAGMENT_SHADER = makeFragmentShader(cfg.glowPower);
+const DEFAULT_STYLE = "gargantua";
 
-const {
-  scale: S, glowPower, initRotX: RX, initRotY: RY,
-  showEventHorizon,
-  totalBody: N_BODY, bodyColors: BODY_C, bodyOpacity: BODY_A,
-  totalDisk: N_DISK, diskZones: DISK_Z,
-  diskThicknessInner: TH_IN, diskThicknessOuter: TH_OUT,
-  dopplerBoost: DOPPLER,
-  totalHalo: N_HALO, haloMajor: HM, haloMinor: Hm,
-  haloColors: HALO_C, haloWeights: HALO_W,
-} = cfg;
-
-const R = 8;               // 事件视界半径（局部空间）
-const TOTAL = N_BODY + N_DISK + N_HALO;
-const MOUSE_Y = 0.4, MOUSE_X = 0.25, LERP = 0.04;
-
-// ─── 辅助：torus 粒子（极细管径，避免甜圈） ───
+// ─── 辅助：torus 粒子 ───
 function torusPos(majorR, minorR) {
   const theta = Math.random() * Math.PI * 2;
   const phi = Math.random() * Math.PI * 2;
   const r = majorR + minorR * Math.cos(phi);
-  return {
-    x: r * Math.cos(theta),
-    y: minorR * Math.sin(phi),
-    z: r * Math.sin(theta),
-    theta,
-    phi,
-  };
+  return { x: r * Math.cos(theta), y: minorR * Math.sin(phi), z: r * Math.sin(theta), theta, phi };
 }
 
-function StarRing() {
+function StarRing({ style } = {}) {
+  const effectiveStyle = style || DEFAULT_STYLE;
+  const cfg = STYLES[effectiveStyle];
+  const FRAGMENT_SHADER = makeFragmentShader(cfg.glowPower);
+  const {
+    scale: S, initRotX: RX, initRotY: RY,
+    showEventHorizon,
+    totalBody: N_BODY, bodyColors: BODY_C, bodyOpacity: BODY_A,
+    totalDisk: N_DISK, diskZones: DISK_Z,
+    diskThicknessInner: TH_IN, diskThicknessOuter: TH_OUT,
+    dopplerBoost: DOPPLER,
+    totalHalo: N_HALO, haloMajor: HM, haloMinor: Hm,
+    haloColors: HALO_C, haloWeights: HALO_W,
+  } = cfg;
+  const R = 8;
+  const TOTAL = N_BODY + N_DISK + N_HALO;
+  const MOUSE_Y = 0.4, MOUSE_X = 0.25, LERP = 0.04;
+
   const containerRef = useRef(null);
   const frameIdRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });

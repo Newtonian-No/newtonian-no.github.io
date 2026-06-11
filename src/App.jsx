@@ -4,7 +4,7 @@ import HeroSection from "./components/HeroSection";
 import Header from "./components/Header";
 import TabMe from "./components/TabMe";
 import TabAI from "./components/TabAI";
-import StarRing from "./components/StarRing";
+import BlackHole from "./components/blackhole";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +19,7 @@ function App() {
   return (
     <div className="bg-[#02020e] text-white overflow-x-hidden">
       {/* 星环背景：始终渲染，fixed 全屏，在 Intro 和 HeroSection 下方 */}
-      <StarRing />
+      <BlackHole />
 
       {isLoading && <Intro onComplete={handleIntroComplete} />}
 
