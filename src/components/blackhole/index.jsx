@@ -1,10 +1,10 @@
 // ─── BlackHole 入口 ───
 // 检测 WebGPU → 路由到对应渲染器
 //   WebGPU 可用 → RaymarchSphere (体积光线投射)
-//   WebGPU 不可用 → WebGLBlackHole (CPU 粒子 + 引力透镜后处理)
+//   WebGPU 不可用 → StarRing (土星环风格)
 
 import React, { useState, useEffect } from "react";
-import WebGLBlackHole from "./WebGLBlackHole";
+import StarRing from "../StarRing";
 
 const RaymarchSphere = React.lazy(() => import("./RaymarchSphere"));
 
@@ -37,6 +37,6 @@ export default function BlackHole() {
     );
   }
 
-  // WebGPU 不可用 → WebGL 粒子黑洞（引力透镜 + 吸积盘 + 光子环 + 星场）
-  return <WebGLBlackHole />;
+  // WebGPU 不可用 → 土星环
+  return <StarRing style="saturn" />;
 }
