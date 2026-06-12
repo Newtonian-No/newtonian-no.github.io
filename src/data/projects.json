@@ -29,6 +29,30 @@
     "tag": "LLM Agent",
     "description": "多平台智能助手，多Agent协作调度，RAG知识库，自建全链路",
     "tech": ["Python", "LLM", "RAG", "多Agent", "QQ/微信"],
-    "links": { "github": "https://github.com/Newtonian-No" }
+    "links": {}
+  },
+  {
+    "id": "pcs3",
+    "title": "PC-S³ 预测误差条件 SSM",
+    "tag": "研究",
+    "description": "5路消融实验验证预测编码+选择性状态空间扫描，CIFAR-100上concat达0.693最优",
+    "tech": ["PyTorch", "Mamba", "Predictive Coding"],
+    "links": { "github": "https://github.com/Newtonian-No/pcs3-phase1a" }
+  },
+  {
+    "id": "dual-persona",
+    "title": "双层意识流人格插件",
+    "tag": "Agent架构",
+    "description": "潜意识提取情感→主意识表达，支持代码专家模式自动路由与多人格热切换",
+    "tech": ["Python", "LLM", "多Agent"],
+    "links": { "github": "https://github.com/Newtonian-No/astrbot_plugin_dual_persona" }
+  },
+  {
+    "id": "star-council",
+    "title": "星海理事会 Star Council",
+    "tag": "多Agent协作",
+    "description": "5专业理事（架构/实验/文献/文字/魔鬼代言人）多轮学术讨论，独立发言互相质疑",
+    "tech": ["Python", "LLM", "多Agent", "学术写作"],
+    "links": { "github": "https://github.com/Newtonian-No/star-council" }
   }
 ]

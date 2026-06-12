@@ -114,7 +114,7 @@ function HeroSection() {
         </h1>
       </div>
 
-      <div className="hero-scroll absolute bottom-10 flex flex-col items-center gap-3 text-gray-600">
+      <div className="hero-scroll absolute bottom-28 flex flex-col items-center gap-3 text-gray-600">
         <span className="text-[11px] tracking-[0.3em] uppercase">Scroll to Explore</span>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M12 5v14M5 12l7 7 7-7" />

@@ -13,7 +13,6 @@ function GrayGooIntro({ onComplete }) {
   useGSAP(
     () => {
       const dots = containerRef.current.querySelectorAll(".gg-dot");
-      const title = containerRef.current.querySelector(".gg-title");
 
       const tl = gsap.timeline({
         onComplete: () => {
@@ -55,38 +54,14 @@ function GrayGooIntro({ onComplete }) {
           ease: "power2.inOut",
           stagger: { amount: 0.3, from: "random", grid: [GRID, GRID] },
         }, "-=0.2")
-        // 阶段三：光点汇聚成文字
+        // 阶段三：光点消散 → 直接结束
         .to(dots, {
           scale: 0,
           autoAlpha: 0,
           duration: 0.5,
           ease: "power3.in",
           stagger: { amount: 0.6, from: "edges", grid: [GRID, GRID] },
-        }, "+=0.2")
-        // 阶段四：标题浮现
-        .fromTo(
-          title,
-          { y: 40, autoAlpha: 0, filter: "blur(8px)" },
-          { y: 0, autoAlpha: 1, filter: "blur(0px)", duration: 1, ease: "power3.out" },
-          "-=0.3"
-        )
-        // 阶段五：标题脉冲 + 消散
-        .to(title, {
-          scale: 1.1,
-          duration: 0.3,
-          ease: "power2.out",
-        })
-        .to(title, {
-          scale: 1,
-          duration: 0.6,
-          ease: "power2.inOut",
-        }, "+=0.8")
-        .to(title, {
-          autoAlpha: 0,
-          filter: "blur(4px)",
-          duration: 0.5,
-          ease: "power3.in",
-        });
+        }, "+=0.2");
     },
     { scope: containerRef }
   );
@@ -121,17 +96,6 @@ function GrayGooIntro({ onComplete }) {
           />
         ))}
       </div>
-
-      {/* 标题 */}
-      <h1
-        className="gg-title text-7xl md:text-9xl font-black tracking-tight text-emerald-400 z-10"
-        style={{
-          fontFamily: "'Oswald', 'Impact', 'Arial Black', sans-serif",
-          textShadow: "0 0 60px rgba(52, 211, 153, 0.3)",
-        }}
-      >
-        小灰
-      </h1>
     </div>
   );
 }

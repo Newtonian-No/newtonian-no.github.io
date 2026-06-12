@@ -3,6 +3,7 @@ import Intro from "../components/Intro";
 import HeroSection from "../components/HeroSection";
 import TabMe from "../components/TabMe";
 import BlackHole from "../components/blackhole";
+import ScrollReveal from "../components/ScrollReveal";
 import FAB from "../components/FAB";
 
 function HomePage() {
@@ -25,11 +26,15 @@ function HomePage() {
       {showContent && (
         <div className="animate-fadeIn">
           <HeroSection />
-          <section className="min-h-screen bg-[#02020e]">
-            <main className="pb-20 px-6">
-              <TabMe />
-            </main>
-          </section>
+
+          {/* Bio 区 — 透明背景，卡片自带磨砂玻璃 */}
+          <ScrollReveal type="fade-up" threshold={0.2}>
+            <section className="min-h-screen">
+              <main className="pb-20 px-6">
+                <TabMe />
+              </main>
+            </section>
+          </ScrollReveal>
         </div>
       )}
       <FAB visible={fabVisible} />

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import GrayGooIntro from "../components/GrayGooIntro";
+import MatrixRain from "../components/MatrixRain";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,9 +45,28 @@ function GrayGooPage() {
 
   return (
     <div className="bg-[#020a08] text-white min-h-screen overflow-x-hidden">
+      <MatrixRain />
       {loading && <GrayGooIntro onComplete={() => setLoading(false)} />}
 
       {!loading && (
+        <>
+          {/* 返回 FAB — 独立于内容区，纯 fixed */}
+          <button
+            onClick={() => navigate("/")}
+            className="fixed left-8 bottom-8 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full
+              bg-emerald-500/[0.06] border border-emerald-500/[0.12] backdrop-blur-xl
+              text-emerald-400/70 text-sm font-bold
+              hover:bg-emerald-500/[0.12] hover:text-emerald-300 hover:border-emerald-500/25
+              hover:shadow-[0_0_30px_-8px_rgba(52,211,153,0.15)]
+              transition-all duration-500
+              before:absolute before:inset-0 before:rounded-full before:skew-x-[-6deg] before:-z-10"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>主页</span>
+          </button>
+
         <div className="animate-fadeIn max-w-5xl mx-auto px-6 py-20 space-y-24">
           {/* 标题区 */}
           <section className="text-center space-y-6">
@@ -156,20 +176,8 @@ function GrayGooPage() {
               ))}
             </div>
           </section>
-
-          {/* 返回 */}
-          <div className="text-center pb-12">
-            <button
-              onClick={() => navigate("/")}
-              className="relative px-6 py-3 text-sm font-bold text-white/70 rounded-full
-                bg-white/[0.04] border border-white/[0.08] backdrop-blur-md
-                hover:bg-white/[0.08] hover:text-white transition-all duration-300
-                before:absolute before:inset-0 before:rounded-full before:skew-x-[-6deg] before:-z-10"
-            >
-              ← 回到主页
-            </button>
-          </div>
         </div>
+        </>
       )}
     </div>
   );
