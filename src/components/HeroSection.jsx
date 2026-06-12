@@ -71,12 +71,6 @@ function HeroSection() {
       );
 
       tl.fromTo(
-        ".hero-sub",
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.6 },
-        "-=0.2"
-      );
-      tl.fromTo(
         ".hero-scroll",
         { autoAlpha: 0 },
         { autoAlpha: 1, duration: 0.6 },
@@ -118,9 +112,6 @@ function HeroSection() {
         >
           {TARGET}
         </h1>
-        <p className="hero-sub text-lg md:text-xl text-gray-500 font-light mt-8 max-w-md mx-auto">
-          阮愔哲 · 上海大学 · 人工智能
-        </p>
       </div>
 
       <div className="hero-scroll absolute bottom-10 flex flex-col items-center gap-3 text-gray-600">
