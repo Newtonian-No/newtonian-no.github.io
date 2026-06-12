@@ -26,6 +26,6 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
